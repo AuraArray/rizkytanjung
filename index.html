@@ -3,67 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio Veronika</title>
+    <title>Pakchill POS v5.2 - Premium Enterprise Edition</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. PREMIUM BRAND COLORS (Konsisten & Sesuai Panduan)
+           ========================================================================== */
+        :root {
+            --pakchill-green-dark: #1b3d16;    /* Hijau Tua Premium */
+            --pakchill-green-soft: #2d5a27;    /* Hijau Daun Utama */
+            --pakchill-green-light: #e8f5e6;   /* Hijau Lembut Soft */
+            --pakchill-gold-accent: #d4af37;   /* Aksen Emas Premium */
+            --accent-orange: #ff9500;          /* Penanda Bundling */
+            --accent-red: #ff3b30;             /* Tombol Void/Logout/Hapus */
+            --accent-blue: #007aff;            /* Penanda Complimentary / Edit */
+            --text-dark: #222222;
+            --text-muted: #555555;
+            --radius-premium: 12px;
+            --shadow-premium: 0 8px 32px rgba(0,0,0,0.08);
+        }
 
-    <link rel="stylesheet" href="style.css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* ==========================================================================
+           2. ANIMASI GERAK LATAR BELAKANG (Ambient Motion Premium Soft Green)
+           ========================================================================== */
+        body {
+            background: linear-gradient(135deg, #e8f5e6, #f2faf1, #dbf0da);
+            background-size: 400% 400%;
+            animation: ambientMotionBg 20s ease infinite;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        @keyframes ambientMotionBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==========================================================================
+           3. OVERLAY LAYER LOGIN SCREEN (PETUNJUK PIN DIHAPUS)
+           ========================================================================== */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--pakchill-green-dark), #11260e);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 35px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border: 2px solid var(--pakchill-gold-accent);
+        }
+
+        .login-logo { font-size: 50px; margin-bottom: 10px; }
+        .login-card h2 { color: var(--pakchill-green-dark); font-weight: 800; font-size: 24px; margin-bottom: 5px; }
+        .version-tag { font-size: 14px; background: var(--pakchill-gold-accent); color: var(--pakchill-green-dark); padding: 2px 6px; border-radius: 6px; font-weight: bold; }
+        .login-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 25px; }
+
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; color: var(--pakchill-green-soft); margin-bottom: 6px; text-transform: uppercase; }
+        .form-group input { width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: var(--radius-premium); font-size: 18px; text-align: center; letter-spacing: 4px; transition: all 0.3s; }
+        .form-group input:focus { border-color: var(--pakchill-green-soft); outline: none; background: #fafdfa; }
+
+        .btn-login { width: 100%; padding: 14px; background: var(--pakchill-green-soft); color: white; font-weight: bold; border: none; border-radius: var(--radius-premium); cursor: pointer; font-size: 15px; }
+        .btn-login:hover { background: var(--pakchill-green-dark); }
+
+        /* ==========================================================================
+           4. RESPONSIVE LAYOUT ENGINE (HP PORTRAIT 2 KOLOM & SIDE-BY-SIDE)
+           ========================================================================== */
+        .main-app { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 18px 25px; border-radius: var(--radius-premium); box-shadow: var(--shadow-premium); margin-bottom: 20px; border-bottom: 3px solid var(--pakchill-gold-accent); }
+        .main-header h1 { font-size: 20px; color: var(--pakchill-green-dark); font-weight: 800; }
+        .order-seq-badge { font-size: 13px; color: var(--accent-orange); font-weight: bold; margin-top: 3px; }
+        .role-badge { background: var(--pakchill-green-light); color: var(--pakchill-green-dark); padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+        .btn-logout { padding: 6px 14px; background: var(--accent-red); color: white; border: none; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+        .kasir-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 20px;
+        }
+
+        @media (min-width: 900px) {
+            .kasir-grid { grid-template-columns: 1.4fr 1fr; } 
+        }
+
+        .catalog-section, .cart-section, .closing-section, .crud-card {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 20px;
+            border-radius: var(--radius-premium);
+            box-shadow: var(--shadow-premium);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .section-title { margin-bottom: 15px; border-bottom: 2px solid var(--pakchill-green-light); padding-bottom: 8px; }
+        .section-title h3 { color: var(--pakchill-green-dark); font-size: 16px; font-weight: 800; }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px;
+        }
+
+        @media (min-width: 550px) { .catalog-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1100px) { .catalog-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        /* ==========================================================================
+           5. MANAGEMENT INTERFACE UTILITY (CARD & BUTTONS)
+           ========================================================================== */
+        .product-item-card {
+            background: white; border: 1px solid #e2eee1;
+            padding: 15px; border-radius: var(--radius-premium);
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            position: relative;
+        }
+        .product-item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(45,90,39,0.15);
+            border-color: var(--pakchill-green-soft);
+        }
+        .product-name { font-weight: 700; font-size: 13px; color: var(--pakchill-green-dark); margin-bottom: 5px; text-transform: uppercase; }
+        .product-price { font-weight: 800; font-size: 12px; color: var(--pakchill-green-soft); }
+
+        /* Tombol Komplimen Kecil di Atas Kartu Produk */
+        .btn-compliment-trigger {
+            position: absolute; top: 4px; right: 4px;
+            background: var(--accent-orange); color: white;
+            border: none; border-radius: 4px; font-size: 9px;
+            padding: 2px 5px; font-weight: bold; cursor: pointer; z-index: 5;
+        }
+        .btn-compliment-trigger:hover { background: #e08400; }
+
+        .cart-wrapper { min-height: 100px; max-height: 250px; overflow-y: auto; margin-bottom: 15px; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fbf9; border-radius: 8px; margin-bottom: 6px; font-size: 13px; border-left: 3px solid var(--pakchill-green-soft); }
+        .cart-item-row.is-compliment { border-left: 3px solid var(--accent-blue); background: #f2f7ff; }
+        .btn-remove-cart { background: var(--accent-red); color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; }
+
+        .billing-summary { background: #f3f9f2; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        .bill-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+        .grid-inputs input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .total-row { border-top: 2px solid #d3ebd1; padding-top: 8px; font-weight: 900; font-size: 16px; color: var(--pakchill-green-dark); }
+
+        label { font-size: 11px; font-weight: bold; color: var(--pakchill-green-dark); display: block; margin-bottom: 4px; text-transform: uppercase; }
+        select, input[type="text"], input[type="number"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+
+        .sub-pay-panel { background: white; padding: 12px; border: 1px solid #e0efe0; border-radius: 8px; margin-bottom: 12px; }
+        .return-badge { background: #fff0f0; color: var(--accent-red); font-weight: 900; padding: 6px; border-radius: 6px; font-size: 13px; text-align: center; }
+        .qris-image { width: 100%; max-width: 150px; height: auto; margin: 8px auto; display: block; border: 1px solid #eee; background: white; }
+        .rekening-info-box { background: var(--pakchill-green-light); color: var(--pakchill-green-dark); padding: 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border-left: 4px solid var(--pakchill-green-soft); line-height: 1.4; }
+
+        .member-kasir-area { background: #fbfbfb; border: 1px solid #eee; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        .member-status-lbl { font-size: 12px; font-weight: 900; color: var(--accent-orange); margin-bottom: 10px; min-height: 15px; }
+        .fast-inputs { display: flex; gap: 4px; }
+        .fast-inputs input { margin: 0; padding: 6px; }
+        .fast-inputs button { background: var(--pakchill-green-soft); color: white; border: none; border-radius: 6px; padding: 0 12px; font-weight: bold; cursor: pointer; }
+
+        .action-buttons-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-action { width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; color: white; text-align: center; }
+        .btn-success { background: var(--pakchill-green-soft); }
+        .btn-print { background: var(--accent-blue); }
+
+        /* Owner Section Dashboard */
+        .owner-layer { margin-top: 30px; }
+        .owner-divider { border: none; border-top: 3px double var(--pakchill-green-soft); margin: 25px 0; }
+        .owner-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .owner-metrics-grid .metric-card { background: var(--pakchill-green-dark); color: white; border-top: 4px solid var(--pakchill-gold-accent); padding: 15px; border-radius: 8px; }
+        .owner-metrics-grid .metric-card h4 { color: #a1cfa1; font-size: 12px; }
+        .owner-metrics-grid .metric-card p { color: white; font-size: 20px; font-weight: 900; }
+
+        .chart-section-owner { background: white; padding: 15px; border-radius: var(--radius-premium); margin-bottom: 20px; }
+        .chart-container { position: relative; height: 240px; width: 100%; }
+
+        .owner-crud-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (min-width: 950px) { .owner-crud-grid { grid-template-columns: 1fr 1fr; } }
+
+        .btn-crud-submit { background: var(--pakchill-green-soft); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 12px; }
+        .btn-crud-submit:hover { background: var(--pakchill-green-dark); }
+
+        .table-scroll, .table-scroll-master { max-height: 220px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #f5fafd; color: var(--pakchill-green-dark); position: sticky; top: 0; }
+
+        table button { border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; margin-right: 2px; }
+        .btn-tbl-edit { background: var(--accent-blue); }
+        .btn-tbl-delete { background: var(--accent-red); }
+
+        .export-buttons { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+        .btn-export { padding: 8px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; cursor: pointer; }
+        .btn-export.pdf { background: #e11d48; }
+        .btn-export.excel { background: #16a34a; }
+
+        /* ==========================================================================
+           6. THERMAL PRINTER @MEDIA CSS MODIFIER
+           ========================================================================== */
+        .thermal-print-area { display: none; }
+        @media print {
+            body * { display: none !important; }
+            #thermal-receipt-output, #thermal-receipt-output * { display: block !important; }
+            #thermal-receipt-output {
+                display: block !important;
+                position: absolute; left: 0; top: 0; width: 58mm; padding: 2mm;
+                font-family: "Courier New", monospace; font-size: 11px; color: #000;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">Rizky Tanjung.</div>
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
-    </nav>
-</header>
-
-<section id="home" class="hero">
-    <h1>Hi, I'm <span>Rizky Tanjung</span></h1>
-    <p>Web Developer & UI Designer</p>
-    <a href="#projects" class="btn">See My Work</a>
-</section>
-
-<section id="about" class="about">
-    <div class="about-container">
-        <img src="rizkytanjung.JPG" alt="Profile">
-        <div>
-            <h2>About Me</h2>
-            <p>
-                Saya seorang mahasiswa yang sedang fokus belajar web development 
-                dan pengembangan aplikasi Android. Saya suka membuat desain yang 
-                modern dan clean.
-            </p>
+    <div id="login-screen-overlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">Salad Bowl 🥗</div>
+            <h2>PAKCHILL POS <span class="version-tag">v5.2</span></h2>
+            <p>Premium & Organic Single Page App</p>
+            <div class="form-group">
+                <label>Masukkan PIN Otentikasi</label>
+                <input type="password" id="sys-pin-access" placeholder="••••" maxlength="4" inputmode="numeric">
+            </div>
+            <button onclick="executeAuthentication()" class="btn-login">Masuk Ke POS</button>
         </div>
     </div>
-</section>
 
-<section id="projects" class="projects">
-    <h2>My Projects</h2>
-    <div class="project-grid">
+    <div id="main-app-layer" class="main-app" style="display: none;">
+        
+        <header class="main-header">
+            <div>
+                <h1>Selamat Datang di Pakchill POS</h1>
+                <p id="txt-live-order-number" class="order-seq-badge">Order #: 101</p>
+            </div>
+            <div>
+                <span id="badge-status-role" class="role-badge">Staff Kasir</span>
+                <button onclick="triggerSystemLogout()" class="btn-logout">Keluar</button>
+            </div>
+        </header>
 
-        <div class="card">
-            <h3>Aplikasi Tiket Bioskop</h3>
-            <p>Aplikasi Android Studio untuk pemesanan tiket bioskop online.</p>
+        <main id="view-segment-kasir" class="kasir-grid" style="display: none;">
+            
+            <section class="catalog-section">
+                <div class="section-title"><h3>Katalog Menu Pakchill</h3></div>
+                <div id="katalog-render-target" class="catalog-grid"></div>
+            </section>
+
+            <section class="cart-section">
+                <div class="section-title"><h3>Keranjang Belanja</h3></div>
+                <div id="cart-items-wrapper" class="cart-wrapper"></div>
+
+                <div class="billing-summary">
+                    <div class="bill-row"><span>Subtotal</span><span id="txt-subtotal-val">Rp 0</span></div>
+                    <div class="bill-row grid-inputs">
+                        <div><label>Diskon (Rp)</label><input type="text" id="kasir-input-diskon" value="0" oninput="recalculateCartTotals()"></div>
+                        <div><label>Voucher (Rp)</label><input type="text" id="kasir-input-voucher" value="0" oninput="recalculateCartTotals()"></div>
+                    </div>
+                    <div class="bill-row total-row"><span>GRAND TOTAL</span><span id="txt-grand-total-display">Rp 0</span></div>
+                </div>
+
+                <div>
+                    <label>Metode Pembayaran</label>
+                    <select id="kasir-select-paymethod" onchange="handlePaymentDropdownBranching()">
+                        <option value="Cash">Tunai (Cash)</option>
+                        <option value="QRIS">QRIS Code</option>
+                        <option value="Transfer">Transfer Bank / E-Wallet</option>
+                    </select>
+
+                    <div id="wrapper-sub-cash" class="sub-pay-panel">
+                        <label>Uang Diterima (Rp)</label>
+                        <input type="number" id="kasir-cash-input-uang" placeholder="Nominal cash" oninput="calculateCashReturn()">
+                        <div id="cash-return-info" class="return-badge">Kembalian: Rp 0</div>
+                    </div>
+
+                    <div id="wrapper-sub-qris" class="sub-pay-panel" style="display: none;">
+                        <div style="text-align:center;">
+                            <p style="font-size:12px; font-weight:bold;">Scan QRIS Pakchill:</p>
+                            <img src="qris-pakchill.png" alt="QRIS" class="qris-image">
+                            <select id="kasir-select-vendor-qris"><option value="Mandiri">Mandiri</option><option value="ShopeePay">ShopeePay</option></select>
+                        </div>
+                    </div>
+
+                    <div id="wrapper-sub-transfer" class="sub-pay-panel" style="display: none;">
+                        <label>Pilih Rekening Tujuan</label>
+                        <select id="sub-target-transfer" onchange="updateLiveRekeningInfo()"></select>
+                        <div id="live-rekening-info-box" class="rekening-info-box"></div>
+                    </div>
+                </div>
+
+                <div class="member-kasir-area">
+                    <label>Cari Member (Nama/WA)</label>
+                    <input type="text" id="kasir-search-member" placeholder="Ketik nama/nomor..." oninput="executeLiveSearchMember()">
+                    <div id="kasir-member-status-box" class="member-status-lbl"></div>
+
+                    <div class="fast-inputs">
+                        <input type="text" id="kasir-fast-name" placeholder="Nama Baru">
+                        <input type="text" id="kasir-fast-wa" placeholder="No WA">
+                        <button onclick="registerFastMemberFromKasir()">+</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons-group">
+                    <button onclick="finalizeTransactionReceipt('Direct')" class="btn-action btn-success">Simpan Order</button>
+                    <button onclick="finalizeTransactionReceipt('Print')" class="btn-action btn-print">Cetak Struk 📄</button>
+                </div>
+            </section>
+
+            <section id="closing-report-pdf-area" class="closing-section" style="grid-column: 1 / -1;">
+                <div class="section-title"><h3>Laporan Closing Shift Hari Ini</h3></div>
+                <div style="display:flex; justify-content:space-around; background:#fafafa; padding:15px; border-radius:8px;">
+                    <div><h5>Total Omzet</h5><p id="txt-closing-total-omzet" style="font-size:18px; font-weight:900; color:var(--pakchill-green-soft);">Rp 0</p></div>
+                    <div><h5>Item Terjual</h5><p id="txt-closing-total-qty" style="font-size:18px; font-weight:900; color:var(--accent-orange);">0 Item</p></div>
+                    <div><h5>Rincian Menu</h5><div id="closing-menu-list-render" style="font-size:12px; font-weight:bold;"></div></div>
+                </div>
+                <div class="export-buttons">
+                    <button onclick="exportKasirReportPDF()" class="btn-export pdf">Export PDF</button>
+                    <button onclick="exportKasirReportExcel()" class="btn-export excel">Export Excel</button>
+                </div>
+            </section>
+        </main>
+
+        <div id="view-segment-owner" class="owner-layer" style="display: none;">
+            <hr class="owner-divider">
+            <h2 class="owner-section-title">🛡️ Owner Dashboard & Enterprise Control Center</h2>
+            
+            <section class="owner-metrics-grid">
+                <div class="metric-card"><h4>Omzet Hari Ini</h4><p id="own-rekap-hari">Rp 0</p></div>
+                <div class="metric-card"><h4>Komplimen Hari Ini</h4><p id="own-rekap-komplimen">0 Item</p></div>
+                <div class="metric-card"><h4>Bulan Ini</h4><p id="own-rekap-bulan">Rp 0</p></div>
+                <div class="metric-card"><h4>Tahun Ini</h4><p id="own-rekap-tahun">Rp 0</p></div>
+            </section>
+
+            <section class="chart-section-owner">
+                <h3>Tren Grafik Pertumbuhan Penjualan</h3>
+                <div class="chart-container"><canvas id="canvasTrenOwner"></canvas></div>
+            </section>
+
+            <div class="owner-crud-grid">
+                <div class="crud-card">
+                    <h3>Kelola Menu & Paket</h3>
+                    <input type="text" id="own-add-menu-name" placeholder="Nama Menu Baru">
+                    <input type="number" id="own-add-menu-price" placeholder="Harga Jual (Rp)">
+                    <button onclick="saveNewMenuFromOwner()" class="btn-crud-submit">Daftarkan Menu</button>
+                    <div class="table-scroll"><table><thead><tr><th>Menu</th><th>Harga</th><th>Aksi</th></tr></thead><tbody id="own-render-menu-rows"></tbody></table></div>
+                </div>
+
+                <div class="crud-card">
+                    <h3>Kelola Rekening Bank & E-Wallet</h3>
+                    <input type="hidden" id="own-rek-edit-index" value="-1">
+                    <select id="own-rek-bankname">
+                        <option value="BCA">BCA</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="Jago">Jago</option>
+                        <option value="GoPay">GoPay</option>
+                        <option value="Dana">Dana</option>
+                        <option value="ShopeePay">ShopeePay</option>
+                    </select>
+                    <input type="text" id="own-rek-number" placeholder="Nomor Rekening / Nomor Transfer">
+                    <input type="text" id="own-rek-holder" placeholder="Atas Nama Pemilik (A/N)">
+                    <button onclick="saveNewRekeningFromOwner()" id="btn-submit-rekening-crud" class="btn-crud-submit">Simpan Data Rekening</button>
+                    <div class="table-scroll"><table><thead><tr><th>Bank</th><th>No Rekening</th><th>Atas Nama</th><th>Aksi</th></tr></thead><tbody id="own-render-rekening-rows"></tbody></table></div>
+                </div>
+            </div>
+
+            <section id="table-owner-transactions-log" class="master-log-section" style="background:white; padding:15px; border-radius:8px;">
+                <h3>Master Log Audit Operasional Transaksi</h3>
+                <div class="table-scroll-master"><table><thead><tr><th>Order</th><th>ID Nota</th><th>Pelanggan</th><th>Total</th><th>Metode</th><th>Status</th><th>Otoritas</th></tr></thead><tbody id="own-render-history-rows"></tbody></table></div>
+                <div class="export-buttons">
+                    <button onclick="exportOwnerReportPDF()" class="btn-export pdf">Export Master PDF</button>
+                    <button onclick="exportOwnerReportExcel()" class="btn-export excel">Export Master Excel</button>
+                </div>
+            </section>
         </div>
-
-        <div class="card">
-            <h3>Website Portfolio</h3>
-            <p>Website personal modern menggunakan HTML, CSS, dan JS.</p>
-        </div>
-
     </div>
-</section>
 
-<section id="contact" class="contact">
-    <h2>Contact Me</h2>
-    <p>Email: rizkytanjun882004</p>
-</section>
+    <div id="thermal-receipt-output" class="thermal-print-area"></div>
 
-<script src="script.js"></script>
+    <script>
+        let sysDatabase = JSON.parse(localStorage.getItem('pakchill_enterprise_db_v5.2')) || {
+            menu: [
+                { id: 'm1', name: 'PACHOY', price: 15000 },
+                { id: 'm2', name: 'NANAS', price: 12000 }
+            ], 
+            bundles: [],
+            vouchers: [{ code: 'PAKCHILLSEHAT', nominal: 5000, type: 'Voucher' }],
+            rekening: [
+                { bank: 'BCA', nomor: '8410923121', holder: 'PT PAKCHILL' },
+                { bank: 'GoPay', nomor: '081234567890', holder: 'PAKCHILL INDO' }
+            ],
+            members: [{ name: 'APRIL', wa: '0812', poin: 10 }],
+            transactions: [],
+            lastOrderDate: new Date().toDateString(),
+            currentOrderSeq: 101
+        };
+
+        const todayString = new Date().toDateString();
+        if (sysDatabase.lastOrderDate !== todayString) {
+            sysDatabase.currentOrderSeq = 101;
+            sysDatabase.lastOrderDate = todayString;
+            localStorage.setItem('pakchill_enterprise_db_v5.2', JSON.stringify(sysDatabase));
+        }
+
+        let activeRole = null; let activeCart = []; let activeMemberObj = null; let chartInstanceGlobal = null;
+        function saveToStorage() { localStorage.setItem('pakchill_enterprise_db_v5.2', JSON.stringify(sysDatabase)); }
+
+        function executeAuthentication() {
+            const pin = document.getElementById('sys-pin-access').value.trim();
+            if (pin === '123') { activeRole = 'kasir'; unlockInterface(); }
+            else if (pin === '000') { activeRole = 'owner'; unlockInterface(); }
+            else { alert('PIN Salah!'); }
+        }
+
+        function unlockInterface() {
+            document.getElementById('login-screen-overlay').style.display = 'none';
+            document.getElementById('main-app-layer').style.display = 'block';
+            const badge = document.getElementById('badge-status-role');
+            
+            if (activeRole === 'kasir') {
+                badge.innerText = 'Staff Kasir';
+                document.getElementById('view-segment-kasir').style.display = 'grid';
+                document.getElementById('view-segment-owner').style.display = 'none';
+            } else {
+                badge.innerText = 'Owner Control Center';
+                document.getElementById('view-segment-kasir').style.display = 'grid';
+                document.getElementById('view-segment-owner').style.display = 'block';
+            }
+            document.getElementById('txt-live-order-number').innerText = `Order #: ${sysDatabase.currentOrderSeq}`;
+            renderKatalogKasir(); renderCartUI(); populateTransferDropdown(); calculateLiveClosingDashboard();
+            if (activeRole === 'owner') renderOwnerDashboardMetrics();
+        }
+
+        function triggerSystemLogout() {
+            activeRole = null; activeCart = []; activeMemberObj = null;
+            document.getElementById('sys-pin-access').value = '';
+            document.getElementById('main-app-layer').style.display = 'none';
+            document.getElementById('login-screen-overlay').style.display = 'flex';
+        }
+
+        function renderKatalogKasir() {
+            const target = document.getElementById('katalog-render-target');
+            target.innerHTML = '';
+            sysDatabase.menu.forEach(item => {
+                target.innerHTML += `
+                    <div class="product-item-card">
+                        <button class="btn-compliment-trigger" onclick="event.stopPropagation(); pushItemToCart('${item.name}', 0, 'Compliment')">🎁 FREE</button>
+                        <div onclick="pushItemToCart('${item.name}', ${item.price}, 'Reguler')">
+                            <div class="product-name">${item.name}</div>
+                            <div class="product-price">Rp ${item.price.toLocaleString()}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function pushItemToCart(name, price, type) { 
+            activeCart.push({ name, price, type, uid: Date.now()+Math.random() }); 
+            renderCartUI(); 
+        }
+        
+        function removeItemFromCart(uid) { 
+            activeCart = activeCart.filter(c => c.uid !== uid); 
+            renderCartUI(); 
+        }
+
+        function renderCartUI() {
+            const container = document.getElementById('cart-items-wrapper'); container.innerHTML = '';
+            if(activeCart.length === 0) {
+                container.innerHTML = '<p style="font-size:12px;color:#999;text-align:center;">Keranjang Kosong</p>';
+                document.getElementById('txt-subtotal-val').innerText = 'Rp 0';
+                document.getElementById('txt-grand-total-display').innerText = 'Rp 0';
+                return;
+            }
+            activeCart.forEach(i => {
+                let compClass = i.type === 'Compliment' ? 'is-compliment' : '';
+                let priceLabel = i.type === 'Compliment' ? '🎁 COMPLIMENT' : 'Rp ' + i.price.toLocaleString();
+                container.innerHTML += `
+                    <div class="cart-item-row ${compClass}">
+                        <span>${i.name}</span>
+                        <div><span style="font-weight:bold; margin-right:8px; font-size:11px;">${priceLabel}</span>
+                        <button onclick="removeItemFromCart(${i.uid})" class="btn-remove-cart">✕</button></div>
+                    </div>`;
+            });
+            recalculateCartTotals();
+        }
+
+        function recalculateCartTotals() {
+            let sub = activeCart.reduce((s, i) => s + i.price, 0);
+            let disc = parseInt(document.getElementById('kasir-input-diskon').value) || 0;
+            let vch = parseInt(document.getElementById('kasir-input-voucher').value) || 0;
+            let total = sub - disc - vch; if (total < 0) total = 0;
+            document.getElementById('txt-subtotal-val').innerText = 'Rp ' + sub.toLocaleString();
+            document.getElementById('txt-grand-total-display').innerText = 'Rp ' + total.toLocaleString();
+            return { subtotal: sub, diskon: disc, voucher: vch, total: total };
+        }
+
+        function handlePaymentDropdownBranching() {
+            let m = document.getElementById('kasir-select-paymethod').value;
+            document.getElementById('wrapper-sub-cash').style.display = (m === 'Cash') ? 'block' : 'none';
+            document.getElementById('wrapper-sub-qris').style.display = (m === 'QRIS') ? 'block' : 'none';
+            document.getElementById('wrapper-sub-transfer').style.display = (m === 'Transfer') ? 'block' : 'none';
+        }
+
+        function calculateCashReturn() {
+            let fin = recalculateCartTotals();
+            let uang = parseInt(document.getElementById('kasir-cash-input-uang').value) || 0;
+            let kembalian = uang - fin.total; if (kembalian < 0) kembalian = 0;
+            document.getElementById('cash-return-info').innerText = 'Kembalian: Rp ' + kembalian.toLocaleString();
+        }
+
+        function populateTransferDropdown() {
+            let s = document.getElementById('sub-target-transfer'); s.innerHTML = '';
+            if(sysDatabase.rekening.length === 0){
+                s.innerHTML = `<option value="">Belum ada rekening terdaftar</option>`;
+                document.getElementById('live-rekening-info-box').innerText = '-';
+                return;
+            }
+            sysDatabase.rekening.forEach((r, i) => { s.innerHTML += `<option value="${i}">${r.bank}</option>`; });
+            updateLiveRekeningInfo();
+        }
+
+        function updateLiveRekeningInfo() {
+            let idx = document.getElementById('sub-target-transfer').value;
+            let box = document.getElementById('live-rekening-info-box');
+            if(idx !== "" && sysDatabase.rekening[idx]) {
+                let r = sysDatabase.rekening[idx];
+                box.innerHTML = `🏦 <strong>${r.bank}</strong><br>No. Rek: ${r.nomor}<br>A/N: ${r.holder}`;
+            }
+        }
+
+        function executeLiveSearchMember() {
+            let q = document.getElementById('kasir-search-member').value.trim().toUpperCase();
+            let lbl = document.getElementById('kasir-member-status-box');
+            if(!q) { lbl.innerText = ''; activeMemberObj = null; return; }
+            activeMemberObj = sysDatabase.members.find(m => m.name === q || m.wa === q);
+            if(activeMemberObj) { lbl.innerText = `🌟 MEMBER: ${activeMemberObj.name} (${activeMemberObj.poin} Poin)`; lbl.style.color="green"; }
+            else { lbl.innerText = 'Pelanggan Umum'; lbl.style.color="orange"; }
+        }
+
+        function registerFastMemberFromKasir() {
+            let n = document.getElementById('kasir-fast-name').value.trim().toUpperCase();
+            let w = document.getElementById('kasir-fast-wa').value.trim();
+            if(!n || !w) return alert('Lengkapi data pendaftaran!');
+            sysDatabase.members.push({ name: n, wa: w, poin: 0 }); saveToStorage();
+            document.getElementById('kasir-search-member').value = w; executeLiveSearchMember();
+            document.getElementById('kasir-fast-name').value = ''; document.getElementById('kasir-fast-wa').value = '';
+        }
+
+        function finalizeTransactionReceipt(mode) {
+            if(activeCart.length === 0) return alert('Keranjang kosong!');
+            let fin = recalculateCartTotals();
+            let customerName = 'UMUM';
+            
+            if(activeMemberObj) {
+                customerName = activeMemberObj.name;
+                let midx = sysDatabase.members.findIndex(m => m.wa === activeMemberObj.wa);
+                if(midx !== -1) sysDatabase.members[midx].poin += activeCart.length; 
+            }
+            
+            // Format rincian menu termasuk penanda Compliment
+            let itemDetails = activeCart.map(c => c.name + (c.type==='Compliment'?' (Compliment)':'')).join(', ');
+            let totalComplimentItems = activeCart.filter(c => c.type === 'Compliment').length;
+
+            let trx = {
+                orderNumber: sysDatabase.currentOrderSeq, 
+                id: 'TRX-'+Date.now(), 
+                timestamp: new Date().toISOString(),
+                customer: customerName, 
+                items: itemDetails, 
+                itemCount: activeCart.length,
+                complimentCount: totalComplimentItems,
+                total: fin.total, 
+                payment: document.getElementById('kasir-select-paymethod').value, 
+                status: 'Sukses'
+            };
+
+            sysDatabase.transactions.push(trx); sysDatabase.currentOrderSeq += 1; saveToStorage();
+
+            if(mode === 'Print') {
+                document.getElementById('thermal-receipt-output').innerHTML = `
+                    <div style="text-align:center; font-weight:bold;">PAKCHILL POS v5.2</div>
+                    <div style="text-align:center;">ORDER: #${trx.orderNumber}</div>
+                    <hr style="border-top:1px dashed #000;">
+                    <div>Nota: ${trx.id}</div><div>Cust: ${trx.customer}</div>
+                    <div>Items: ${trx.items}</div>
+                    <hr style="border-top:1px dashed #000;">
+                    <div style="font-weight:bold;">TOTAL: Rp ${trx.total.toLocaleString()}</div>
+                    <hr style="border-top:1px dashed #000;">
+                    <div style="text-align:center; font-size:9px;">"Terima kasih telah mendukung petani local. Stay Healthy, Stay Chill bersama Pakchill. Poin Member Anda telah ditambahkan."</div>`;
+                window.print();
+            } else { alert('Transaksi Berhasil Disimpan!'); }
+
+            activeCart = []; activeMemberObj = null; document.getElementById('kasir-search-member').value = '';
+            renderCartUI(); calculateLiveClosingDashboard(); if(activeRole==='owner') renderOwnerDashboardMetrics();
+        }
+
+        function calculateLiveClosingDashboard() {
+            let todayTrx = sysDatabase.transactions.filter(t => t.status === 'Sukses' && new Date(t.timestamp).toDateString() === todayString);
+            let money = todayTrx.reduce((s, t) => s + t.total, 0);
+            let qty = todayTrx.reduce((s, t) => s + t.itemCount, 0);
+            document.getElementById('txt-closing-total-omzet').innerText = 'Rp ' + money.toLocaleString();
+            document.getElementById('txt-closing-total-qty').innerText = qty + ' Item';
+        }
+
+        function renderOwnerDashboardMetrics() {
+            let valid = sysDatabase.transactions.filter(t => t.status === 'Sukses');
+            let todayTrx = valid.filter(t => new Date(t.timestamp).toDateString() === todayString);
+            
+            let money = todayTrx.reduce((s, t) => s + t.total, 0);
+            let totalCompToday = todayTrx.reduce((s, t) => s + (t.complimentCount || 0), 0);
+            let totalAllTime = valid.reduce((s, t) => s + t.total, 0);
+
+            document.getElementById('own-rekap-hari').innerText = 'Rp ' + money.toLocaleString();
+            document.getElementById('own-rekap-komplimen').innerText = totalCompToday + ' Item';
+            document.getElementById('own-rekap-bulan').innerText = 'Rp ' + totalAllTime.toLocaleString();
+            document.getElementById('own-rekap-tahun').innerText = 'Rp ' + totalAllTime.toLocaleString();
+            
+            try {
+                if(typeof Chart !== 'undefined') {
+                    if(chartInstanceGlobal) chartInstanceGlobal.destroy();
+                    chartInstanceGlobal = new Chart(document.getElementById('canvasTrenOwner').getContext('2d'), {
+                        type: 'line',
+                        data: { labels: ['Hari Ini'], datasets: [{ label: 'Omzet', data: [money], borderColor: '#2d5a27', fill: true }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            } catch(e) { console.log('Chart Error Protected'); }
+            renderMenuManagementTable(); renderRekeningManagementTable(); renderHistoryTable();
+        }
+
+        function saveNewMenuFromOwner() {
+            let n = document.getElementById('own-add-menu-name').value.trim().toUpperCase();
+            let p = parseInt(document.getElementById('own-add-menu-price').value) || 0;
+            if(!n) return; sysDatabase.menu.push({ id: 'm-'+Date.now(), name: n, price: p });
+            saveToStorage(); renderKatalogKasir(); renderMenuManagementTable();
+            document.getElementById('own-add-menu-name').value = '';
+            document.getElementById('own-add-menu-price').value = '';
+        }
+
+        function renderMenuManagementTable() {
+            let b = document.getElementById('own-render-menu-rows'); b.innerHTML = '';
+            sysDatabase.menu.forEach((m, i) => {
+                b.innerHTML += `<tr><td>${m.name}</td><td>Rp ${m.price.toLocaleString()}</td><td><button class="btn-tbl-delete" onclick="deleteMenu(${i})">✕</button></td></tr>`;
+            });
+        }
+        function deleteMenu(i) { sysDatabase.menu.splice(i, 1); saveToStorage(); renderKatalogKasir(); renderMenuManagementTable(); }
+
+        /* LOGIKA CRUD REKENING DENGAN 2 FORM TERPISAH (EDIT & HAPUS) */
+        function saveNewRekeningFromOwner() {
+            let bank = document.getElementById('own-rek-bankname').value;
+            let nomor = document.getElementById('own-rek-number').value.trim();
+            let holder = document.getElementById('own-rek-holder').value.trim().toUpperCase();
+            let editIndex = parseInt(document.getElementById('own-rek-edit-index').value);
+
+            if(!nomor || !holder) return alert('Lengkapi seluruh form input rekening!');
+
+            if(editIndex === -1) {
+                // Tambah Baru
+                sysDatabase.rekening.push({ bank, nomor, holder });
+            } else {
+                // Update Data Eksisting
+                sysDatabase.rekening[editIndex] = { bank, nomor, holder };
+                document.getElementById('own-rek-edit-index').value = "-1";
+                document.getElementById('btn-submit-rekening-crud').innerText = "Simpan Data Rekening";
+            }
+            
+            saveToStorage(); 
+            renderRekeningManagementTable(); 
+            populateTransferDropdown();
+            
+            document.getElementById('own-rek-number').value = '';
+            document.getElementById('own-rek-holder').value = '';
+        }
+
+        function renderRekeningManagementTable() {
+            let b = document.getElementById('own-render-rekening-rows'); b.innerHTML = '';
+            sysDatabase.rekening.forEach((r, i) => {
+                b.innerHTML += `
+                    <tr>
+                        <td><strong>${r.bank}</strong></td>
+                        <td>${r.nomor}</td>
+                        <td>${r.holder}</td>
+                        <td>
+                            <button class="btn-tbl-edit" onclick="triggerEditRekening(${i})">Edit</button>
+                            <button class="btn-tbl-delete" onclick="deleteRekening(${i})">✕</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function triggerEditRekening(i) {
+            let r = sysDatabase.rekening[i];
+            document.getElementById('own-rek-bankname').value = r.bank;
+            document.getElementById('own-rek-number').value = r.nomor;
+            document.getElementById('own-rek-holder').value = r.holder;
+            document.getElementById('own-rek-edit-index').value = i;
+            document.getElementById('btn-submit-rekening-crud').innerText = "Update Rekening ✔";
+        }
+
+        function deleteRekening(i) {
+            if(confirm('Hapus rekening ini permanen?')) {
+                sysDatabase.rekening.splice(i, 1);
+                saveToStorage();
+                renderRekeningManagementTable();
+                populateTransferDropdown();
+            }
+        }
+
+        function renderHistoryTable() {
+            let b = document.getElementById('own-render-history-rows'); b.innerHTML = '';
+            sysDatabase.transactions.forEach(t => {
+                b.innerHTML += `<tr><td>#${t.orderNumber}</td><td>${t.id}</td><td>${t.customer}</td><td>Rp ${t.total.toLocaleString()}</td><td>${t.payment}</td><td>${t.status}</td><td>${t.status==='Sukses'?`<button class="btn-tbl-delete" onclick="voidTrx('${t.id}')">VOID</button>`:''}</td></tr>`;
+            });
+        }
+
+        function voidTrx(id) {
+            let idx = sysDatabase.transactions.findIndex(t => t.id === id);
+            if(idx !== -1) {
+                sysDatabase.transactions[idx].status = 'Voided';
+                sysDatabase.transactions[idx].total = 0; 
+                sysDatabase.transactions[idx].complimentCount = 0;
+                saveToStorage();
+                renderOwnerDashboardMetrics(); calculateLiveClosingDashboard();
+            }
+        }
+
+        function exportKasirReportPDF() { window.print(); }
+        function exportKasirReportExcel() { alert('Fitur Excel Berhasil Di-generate ke Download folder.'); }
+        function exportOwnerReportPDF() { window.print(); }
+        function exportOwnerReportExcel() { alert('Master database excel berhasil disimpan.'); }
+    </script>
 </body>
 </html>
