@@ -1,0 +1,351 @@
+:root {
+    --pakchill-green-dark: #1e3f1b;
+    --pakchill-green-medium: #2d5a27;
+    --pakchill-green-soft: #478241;
+    --pakchill-light-bg: rgba(255, 255, 255, 0.85);
+    --ios-blur: blur(25px);
+    --shadow-premium: 0 10px 40px rgba(30, 63, 27, 0.07);
+    --border-ios: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #e4f0e2, #cbdcc8, #b8dbb4, #f2f7f1);
+    background-size: 400% 400%;
+    animation: ambientFluidMotion 14s ease infinite;
+    color: #1c1c1e;
+    overflow-x: hidden;
+}
+
+@keyframes ambientFluidMotion {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+nav {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: var(--ios-blur);
+    -webkit-backdrop-filter: var(--ios-blur);
+    padding: 12px 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: var(--border-ios);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+#badge-status-role {
+    background: var(--pakchill-green-dark);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.logout-btn {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 6px 14px !important;
+    background: #ff3b30 !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold;
+    border-radius: 10px !important;
+    cursor: pointer;
+}
+
+.workspace-container {
+    padding: 20px 3%;
+    width: 100%;
+}
+
+.main-welcome-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--pakchill-green-dark);
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.kasir-operational-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.katalog-container-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ios-panel-card {
+    background: var(--pakchill-light-bg);
+    backdrop-filter: var(--ios-blur);
+    -webkit-backdrop-filter: var(--ios-blur);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: var(--shadow-premium);
+    border: var(--border-ios);
+    margin-bottom: 20px;
+}
+
+.products-adaptive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+}
+
+.product-item-card {
+    background: white;
+    padding: 18px 12px;
+    border-radius: 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+}
+
+.product-item-card:active {
+    transform: scale(0.95);
+}
+
+.badge-bundling-tag {
+    position: absolute;
+    top: 0; left: 0;
+    background: #ff9500; color: white;
+    font-size: 9px; font-weight: 800;
+    padding: 3px 9px; border-bottom-right-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+#cart-items-wrapper {
+    min-height: 80px;
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.cart-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.cost-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-inline-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.input-inline-row label {
+    font-size: 13px;
+    color: #555;
+}
+
+.input-inline-row input {
+    width: 130px !important;
+    margin-bottom: 0 !important;
+    padding: 6px 10px !important;
+    text-align: right;
+    font-size: 14px;
+}
+
+.total-tagihan-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 5px 0;
+    padding: 12px;
+    background: rgba(45, 90, 39, 0.07);
+    border-radius: 14px;
+    font-weight: 800; font-size: 16px;
+}
+
+#txt-grand-total-display {
+    color: var(--pakchill-green-dark);
+    font-size: 19px;
+}
+
+.payment-info-box {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 12px;
+    border-radius: 16px;
+    margin-bottom: 15px;
+}
+
+#kasir-member-status-box {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#login-screen-overlay {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; position: fixed;
+    top:0; left:0; width:100%; height:100%; z-index: 999;
+    background: linear-gradient(135deg, #e4f0e2, #cbdcc8);
+}
+
+.login-glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: var(--ios-blur); -webkit-backdrop-filter: var(--ios-blur);
+    padding: 40px 30px; border-radius: 32px;
+    width: 100%; max-width: 360px; text-align: center;
+    box-shadow: 0 20px 50px rgba(30, 63, 27, 0.12); border: var(--border-ios);
+}
+
+.pakchill-logo-placeholder {
+    width: 100px; height: 100px; margin: 0 auto 18px; border-radius: 22%;
+    background: #fff url('logo-pakchill.png') no-repeat center; background-size: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+input, select, button {
+    width: 100%; padding: 12px 14px; margin-bottom: 10px;
+    border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 14px; outline: none; transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    border-color: var(--pakchill-green-soft);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(71, 130, 65, 0.15);
+}
+
+button.ios-primary-btn {
+    background: var(--pakchill-green-dark);
+    color: white;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+button.ios-primary-btn:active {
+    transform: scale(0.97);
+}
+
+.rekap-owner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-rekap-box {
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.card-rekap-box h5 {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.card-rekap-box h2 {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.ios-table-view {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.ios-table-view th {
+    background: rgba(0,0,0,0.04);
+    padding: 12px 10px;
+    font-weight: 700;
+    color: #444;
+}
+
+.ios-table-view td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    background: white;
+}
+
+.qris-container-preset {
+    width: 100%;
+    max-width: 220px;
+    margin: 10px auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 14px;
+    padding: 10px;
+    background: white;
+}
+
+#live-rekening-info-box {
+    padding: 10px;
+    background: #f0f7ff;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #007aff;
+    border: 1px solid #cbdff7;
+    margin-top: 4px;
+}
+
+#thermal-receipt-output {
+    width: 58mm;
+    padding: 6px;
+    background: #fff;
+    color: #000;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    line-height: 1.2;
+    display: none;
+}
+
+/* KONDISI RESPONSIVE SCREEN */
+@media (max-width: 850px) {
+    .kasir-operational-grid { grid-template-columns: 1fr; }
+    .katalog-container-flex { order: 1; }
+    .checkout-section-card { order: 2; }
+    .products-adaptive-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .main-welcome-title { font-size: 20px; }
+}
+
+/* METODE PRINTER THERMAL EMULATION */
+@media print {
+    body * { display: none !important; }
+    #thermal-receipt-output, #thermal-receipt-output * { display: block !important; }
+    #thermal-receipt-output { position: absolute; left: 0; top: 0; width: 58mm; }
+}
